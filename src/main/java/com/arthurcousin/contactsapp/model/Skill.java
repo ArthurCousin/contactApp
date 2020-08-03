@@ -1,10 +1,12 @@
 package com.arthurcousin.contactsapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Entity
@@ -22,6 +24,10 @@ public class Skill implements Serializable {
     private String level;
 
     private String Owner;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "skills")
+    private List<Contact> contacts;
 
     public Long getId() {
         return id;
@@ -53,5 +59,21 @@ public class Skill implements Serializable {
 
     public void setOwner(String owner) {
         Owner = owner;
+    }
+
+    public List<Contact> getContacts() {
+        return contacts;
+    }
+
+    public void setContacts(List<Contact> contacts) {
+        this.contacts = contacts;
+    }
+
+    public void addContact(Contact contact) {
+        this.contacts.add(contact);
+    }
+
+    public void removeContact(Contact contact){
+        this.contacts.remove(contact);
     }
 }

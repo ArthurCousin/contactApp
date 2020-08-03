@@ -1,7 +1,9 @@
 package com.arthurcousin.contactsapp.controller;
 import com.arthurcousin.contactsapp.model.Contact;
+import com.arthurcousin.contactsapp.model.Skill;
 import com.arthurcousin.contactsapp.repository.ContactRepository;
 import com.arthurcousin.contactsapp.exception.ResourceNotFoundException;
+import com.arthurcousin.contactsapp.repository.SkillRepository;
 import com.arthurcousin.contactsapp.service.SecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -18,6 +20,9 @@ public class ContactController {
 
     @Autowired
     ContactRepository contactRepository;
+
+    @Autowired
+    SkillRepository skillRepository;
 
     @Autowired
     SecurityService securityService;
@@ -67,6 +72,54 @@ public class ContactController {
 
         securityService.checkObjectOwnership(contact.getOwner());
         contactRepository.delete(contact);
+
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/contacts/{id}/skills")
+    @ApiOperation(value = "Add a owned skill for this contact", response = Contact.class, authorizations = { @Authorization(value="Bearer") })
+    public Contact addOwnedSkill(@PathVariable(value = "id") Long contactId,@RequestParam Long skillId) {
+        Contact contact = contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact", "id", skillId));
+
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill", "id", skillId));
+
+        securityService.checkObjectOwnership(skill.getOwner());
+        securityService.checkObjectOwnership(contact.getOwner());
+
+        if(!contact.getSkills().contains(skill))
+            contact.addSkill(skill);
+        else
+            throw new RuntimeException("Skill already owned");
+
+        return contactRepository.save(contact);
+    }
+
+    @GetMapping("/contacts/{id}/skills")
+    @ApiOperation(value = "Get the owned skills for this contact", authorizations = { @Authorization(value="Bearer") })
+    public List<Skill> getOwnedSkills(@PathVariable(value = "id") Long contactId) {
+        Contact contact = contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResourceNotFoundException("contact", "id", contactId));
+
+        securityService.checkObjectOwnership(contact.getOwner());
+
+        return contact.getSkills();
+    }
+
+    @DeleteMapping("/contacts/{id}/skills/{id}")
+    @ApiOperation(value = "Delete a owned skill for this contact", authorizations = { @Authorization(value="Bearer") })
+    public ResponseEntity<?> deleteOwnedSkill(@PathVariable(value = "id") Long contactId,@RequestParam Long skillId) {
+        Contact contact = contactRepository.findById(contactId)
+                .orElseThrow(() -> new ResourceNotFoundException("Contact", "id", skillId));
+
+        Skill skill = skillRepository.findById(skillId)
+                .orElseThrow(() -> new ResourceNotFoundException("Skill", "id", skillId));
+
+        securityService.checkObjectOwnership(skill.getOwner());
+        securityService.checkObjectOwnership(contact.getOwner());
+
+        contact.removeSkill(skill);
 
         return ResponseEntity.ok().build();
     }

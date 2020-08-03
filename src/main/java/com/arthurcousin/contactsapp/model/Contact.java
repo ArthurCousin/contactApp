@@ -1,9 +1,11 @@
 package com.arthurcousin.contactsapp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.List;
 
 
 @Entity
@@ -29,6 +31,14 @@ public class Contact implements Serializable {
     private String MobilePhoneNumber;
 
     private String Owner;
+
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+            name = "contact_skill",
+            joinColumns = @JoinColumn(name = "contact_id"),
+            inverseJoinColumns = @JoinColumn(name = "skill_id"))
+    private List<Skill> skills;
 
     public String getFirstname() {
         return Firstname;
@@ -92,5 +102,21 @@ public class Contact implements Serializable {
 
     public void setOwner(String owner) {
         Owner = owner;
+    }
+
+    public List<Skill> getSkills() {
+        return skills;
+    }
+
+    public void setSkills(List<Skill> skills) {
+        this.skills = skills;
+    }
+
+    public void addSkill(Skill skill) {
+        this.skills.add(skill);
+    }
+
+    public void removeSkill(Skill skill){
+        this.skills.remove(skill);
     }
 }
