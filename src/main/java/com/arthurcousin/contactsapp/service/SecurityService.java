@@ -8,6 +8,6 @@ public class SecurityService {
      public void checkObjectOwnership(String objectOwner){
          String userName = SecurityContextHolder.getContext().getAuthentication().getName();
          if(!userName.equals(objectOwner))
-             throw new SecurityException();
+             throw new SecurityException("Current user is not owner of the object");
      }
 }

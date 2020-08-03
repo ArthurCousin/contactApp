@@ -1,6 +1,6 @@
 package com.arthurcousin.contactsapp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -13,6 +13,7 @@ public class Contact implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty (hidden = true)
     private Long id;
 
     private String Firstname;
@@ -88,6 +89,7 @@ public class Contact implements Serializable {
     public String getOwner() {
         return Owner;
     }
+
     public void setOwner(String owner) {
         Owner = owner;
     }

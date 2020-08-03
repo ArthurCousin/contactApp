@@ -6,6 +6,7 @@ import com.arthurcousin.contactsapp.repository.SkillRepository;
 import com.arthurcousin.contactsapp.service.SecurityService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +25,7 @@ public class SkillController {
     SecurityService securityService;
 
     @GetMapping("/skills")
-    @ApiOperation(value = "View a list of available skills", response = Iterable.class)
+    @ApiOperation(value = "View a list of available skills", response = Iterable.class, authorizations = { @Authorization(value="Bearer") })
     public List<Skill> getAllSkills() {
         return skillRepository.findAll();
     }
@@ -36,14 +37,14 @@ public class SkillController {
     }
 
     @GetMapping("/skills/{id}")
-    @ApiOperation(value = "Search a skill with an ID", response = Skill.class)
+    @ApiOperation(value = "Search a skill with an ID", response = Skill.class, authorizations = { @Authorization(value="Bearer") })
     public Skill getSkillById(@PathVariable(value = "id") Long skillId) {
         return skillRepository.findById(skillId)
-                .orElseThrow(() -> new ResourceNotFoundException("Contact", "id", skillId));
+                .orElseThrow(() -> new ResourceNotFoundException("Skill", "id", skillId));
     }
 
     @PutMapping("/skills/{id}")
-    @ApiOperation(value = "Update a skill")
+    @ApiOperation(value = "Update a skill", authorizations = { @Authorization(value="Bearer") })
     public Skill updateSkill(@PathVariable(value = "id") Long skillId,
                                @RequestBody Skill updatedSkill) {
 
@@ -54,15 +55,14 @@ public class SkillController {
         skill.setName(updatedSkill.getName());
         skill.setLevel(updatedSkill.getLevel());
 
-        updatedSkill = skillRepository.save(skill);
-        return updatedSkill;
+        return skillRepository.save(skill);
     }
 
     @DeleteMapping("/skills/{id}")
-    @ApiOperation(value = "Delete a skill")
+    @ApiOperation(value = "Delete a skill", authorizations = { @Authorization(value="Bearer") })
     public ResponseEntity<?> deleteSkill(@PathVariable(value = "id") Long skillId) {
         Skill skill = skillRepository.findById(skillId)
-                .orElseThrow(() -> new ResourceNotFoundException("Contact", "id", skillId));
+                .orElseThrow(() -> new ResourceNotFoundException("Skill", "id", skillId));
 
         securityService.checkObjectOwnership(skill.getOwner());
         skillRepository.delete(skill);

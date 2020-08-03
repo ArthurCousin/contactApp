@@ -1,5 +1,6 @@
 package com.arthurcousin.contactsapp.model;
 
+import io.swagger.annotations.ApiModelProperty;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import javax.persistence.*;
@@ -7,12 +8,13 @@ import java.io.Serializable;
 
 
 @Entity
-@Table(name = "contacts")
+@Table(name = "skills")
 @EntityListeners(AuditingEntityListener.class)
 public class Skill implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @ApiModelProperty(hidden = true)
     private Long id;
 
     private String name;
@@ -48,6 +50,7 @@ public class Skill implements Serializable {
     public String getOwner() {
         return Owner;
     }
+
     public void setOwner(String owner) {
         Owner = owner;
     }
