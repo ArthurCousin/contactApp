@@ -5,4 +5,4 @@ This Java / Spring Boot project respond to the "Web-API Developer Challenge" wit
 - Swagger Documentation.
 - MySQl DB.
 - JWT authentification.
-- Docker compose image.
+- Docker compose.
